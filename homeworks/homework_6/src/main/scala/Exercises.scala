@@ -1,8 +1,7 @@
 object Exercises {
 
 
-  def reverse[T](seq: Seq[T]): Seq[T] = (seq.size - 1 to 0).map(x =>  seq(x))
-
+  def reverse[T](seq: Seq[T]): Seq[T] = seq.reverse
 
   /**
    * https://ru.wikipedia.org/wiki/Числа_Фибоначчи
@@ -12,23 +11,29 @@ object Exercises {
    */
   def fibonacci4Index(idx: Int): Int = fibonacci(idx).last
 
-  def fibonacci(idx: Int): Seq[Int] = idx match {
-    case 0 => 0 :: Nil
-    case 1 => 0 :: 1 :: Nil
-    case _ => (2 to idx)
-      .foldLeft(fibonacci(1))(
-        (s, i) => s :+ (s(i - 1) + s(i - 2))
-      )
+  def fibonacci(idx: Int): Seq[Int] = {
+    idx match {
+      case 0 => Seq(0)
+      case 1 => Seq(0, 1)
+      case i => (2 to i).foldLeft(Seq(0, 1))((s, _) => s :+ (s.init.last + s.last))
+    }
   }
 
-  private lazy val MORSE = Map("A" -> ".-", "B" -> "-...", "C" -> "-.-.", "D" -> "-..", "E" -> ".", "F" -> "..-.",
-                       "G" -> "--.", "H" -> "....", "I" -> "..", "J" -> ".---", "K" -> "-.-", "L" -> ".-..",
-                       "M" -> "--", "N" -> "-.", "O" -> "---", "P" -> ".--.", "Q" -> "--.-", "R" -> ".-.",
-                       "S" -> "...", "T" -> "-", "U" -> "..-", "V" -> "...-", "W" -> ".--", "X" -> "-..-",
-                       "Y" -> "-.--", "Z" -> "--..")
+  lazy val MORSE = Map("A" -> ".-", "B" -> "-...", "C" -> "-.-.", "D" -> "-..", "E" -> ".", "F" -> "..-.",
+    "G" -> "--.", "H" -> "....", "I" -> "..", "J" -> ".---", "K" -> "-.-", "L" -> ".-..",
+    "M" -> "--", "N" -> "-.", "O" -> "---", "P" -> ".--.", "Q" -> "--.-", "R" -> ".-.",
+    "S" -> "...", "T" -> "-", "U" -> "..-", "V" -> "...-", "W" -> ".--", "X" -> "-..-",
+    "Y" -> "-.--", "Z" -> "--..")
 
-  def morse(text: String): String = text.map(c => MORSE.getOrElse(c.toString.toUpperCase, c.toString)).mkString(" ")
-
+  def morse(text: String): String = {
+    val builder = new StringBuilder
+    val keys = MORSE.keys.toList
+    text.foreach { x =>
+      val s = x.toTitleCase.toString
+      builder.append(if (keys.contains(s)) " " + MORSE(s) else if (s == "!") s else " " + s)
+    }
+    builder.toString().stripPrefix(" ")
+  }
 
   def wordReverse(text: String): String = {
     text.split(" ").map(word => {
